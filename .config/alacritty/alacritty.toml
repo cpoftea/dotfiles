@@ -1,0 +1,47 @@
+import = [
+	# "/home/aleh/.config/alacritty/fonts/jetbrains.toml",
+	# "/home/aleh/.config/alacritty/fonts/intelone.toml",
+	"/home/aleh/.config/alacritty/fonts/ibmplex.toml",
+	"/home/aleh/.config/alacritty/themes/harmonia-night-v1.toml",
+	# "/home/aleh/.config/alacritty/themes/harmonia-night-v2.toml",
+]
+live_config_reload = true
+
+[cursor]
+blink_interval = 500
+blink_timeout = 200
+unfocused_hollow = true
+
+[cursor.style]
+blinking = "Always"
+shape = "Block"
+
+[cursor.vi_mode_style]
+blinking = "On"
+
+[[keyboard.bindings]]
+action = "None"
+key = "Space"
+mode = "~Search"
+mods = "Shift|Control"
+
+[[keyboard.bindings]]
+action = "ToggleViMode"
+key = "X"
+mode = "~Search"
+mods = "Shift|Control"
+
+[[keyboard.bindings]]
+chars = "\u001B[13;2u"
+key = "Return"
+mode = "~Vi|~Search"
+mods = "Shift"
+
+[[keyboard.bindings]]
+chars = "\u001B[13;5u"
+key = "Return"
+mode = "~Vi|~Search"
+mods = "Control"
+
+[window]
+opacity = 0.96
