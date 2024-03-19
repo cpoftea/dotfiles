@@ -20,6 +20,29 @@ config.show_update_window = true
 -- Font
 config.font_size = 14
 config.font = wezterm.font 'BlexMono Nerd Font Mono'
+config.font_rules = {
+	{
+		intensity = 'Half',
+		font = wezterm.font {
+			family = 'BlexMono Nerd Font Mono',
+			weight = 300,
+		},
+	},
+	{
+		intensity = 'Bold',
+		font = wezterm.font {
+			family = 'BlexMono Nerd Font Mono',
+			weight = 700,
+		},
+	},
+	{
+		intensity = 'Normal',
+		font = wezterm.font {
+			family = 'BlexMono Nerd Font Mono',
+			weight = 400,
+		},
+	},
+}
 config.adjust_window_size_when_changing_font_size = false
 
 -- Macos specific
