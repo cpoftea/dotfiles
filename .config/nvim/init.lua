@@ -6,9 +6,10 @@ o.number = true
 o.relativenumber = true
 o.signcolumn = 'yes:2'
 o.statusline = '%<%f %h%m%r%=%{%Linter()%} %{%Diagnostic()%} %{FugitiveStatusline()} %y %-14.(%l,%c%V%) %P '
+o.hidden = true
 
 o.list = true
-vim.opt.listchars = {
+opt.listchars = {
 	tab = '\u{2192} ', -- →
 	nbsp = '\u{25c7}', -- ◇
 	-- eol = '↵',
@@ -18,12 +19,12 @@ vim.opt.listchars = {
 	precedes = '\u{25c2}', -- ◂
 }
 
+vim.cmd.colorscheme('terminal')
+
 o.backup = false
 o.writebackup = false
 o.swapfile = false
 
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
 vim.g.copilot_filetypes = {
 	['*'] = false,
 	typescriptreact = true,
@@ -35,6 +36,8 @@ vim.g.copilot_filetypes = {
 	lua = true,
 	gitcommit = true,
 }
+
+vim.treesitter.language.register('typescript', { 'tsx', 'typescriptreact' })
 
 vim.cmd([[
 	highlight Comment cterm=none ctermfg=2
@@ -77,7 +80,23 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup('plugins')
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
+require('lazy').setup('plugins', {
+	performance = {
+		rtp = {
+			reset = false,
+		},
+	},
+})
+
+require('nvim-treesitter.configs').setup({
+	highlight = {
+		enable = true,
+	},
+})
+
 
 local builtin = require('telescope.builtin')
 
@@ -93,6 +112,9 @@ vim.keymap.set('n', '<C-Q>', '<CMD>q<CR>', { silent = true })
 
 -- Select all
 vim.keymap.set('n', '<C-A>', 'gg<S-V>G', { silent = true })
+
+-- ANSI OSC52 clipboard
+vim.keymap.set('v', '<leader>c', '<Plug>OSCYankVisual')
 
 local cmp = require('cmp')
 local ls = require('luasnip')
@@ -149,8 +171,6 @@ tabnine:setup({
 local utils = require('utils')
 local opts = { noremap=true, }
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 local navic = require("nvim-navic")
@@ -170,10 +190,10 @@ local on_attach = function(client, bufnr)
 	-- See `:help vim.lsp.*` for documentation on any of the below functions
 	-- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, newOpts)
 	vim.keymap.set('n', '<leader>d', builtin.lsp_definitions, newOpts) -- vim.lsp.buf.definition, newOpts)
-	vim.keymap.set('n', 'K', vim.lsp.buf.hover, newOpts)
 	vim.keymap.set('n', '<leader>i', builtin.lsp_implementations, newOpts) --vim.lsp.buf.implementation, newOpts)
 	vim.keymap.set('n', '<leader>ci', builtin.lsp_incoming_calls, newOpts)
 	vim.keymap.set('n', '<leader>co', builtin.lsp_outgoing_calls, newOpts)
+	vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, newOpts)
 	vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, newOpts)
 	vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, newOpts)
 	vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, newOpts)
@@ -202,7 +222,7 @@ require('java').setup()
 -- map buffer local keybindings when the language server attaches
 local servers = { 
 	-- biome = {},
-	tsserver = {},
+	ts_ls = {},
 	hls = {},
 	jdtls = {},
 }
@@ -317,3 +337,23 @@ require('formatter').setup({
 		},
 	},
 })
+
+vim.cmd([[
+	if (!has('clipboard_working'))
+		" In the event that the clipboard isn't working, it's quite likely that
+		" the + and * registers will not be distinct from the unnamed register. In
+		" this case, a:event.regname will always be '' (empty string). However, it
+		" can be the case that `has('clipboard_working')` is false, yet `+` is
+		" still distinct, so we want to check them all.
+		let s:VimOSCYankPostRegisters = ['', '+', '*']
+		function! s:VimOSCYankPostCallback(event)
+			if a:event.operator == 'y' && index(s:VimOSCYankPostRegisters, a:event.regname) != -1
+				call OSCYankRegister(a:event.regname)
+			endif
+		endfunction
+		augroup VimOSCYankPost
+			autocmd!
+			autocmd TextYankPost * call s:VimOSCYankPostCallback(v:event)
+		augroup END
+	endif
+]])

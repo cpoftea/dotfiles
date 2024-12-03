@@ -11,6 +11,7 @@ return {
 	{
 		'nvim-java/nvim-java',
 		dependencies = {
+			'nvim-java/nvim-java-refactor',
 			'nvim-java/lua-async-await',
 			'nvim-java/nvim-java-core',
 			'nvim-java/nvim-java-test',
@@ -55,6 +56,7 @@ return {
 			'SmiteshP/nvim-navic',
 			'nvim-tree/nvim-web-devicons',
 		},
+		opts = {},
 	},
 	'nvim-lua/plenary.nvim',
 	{
@@ -77,8 +79,13 @@ return {
 		build = './install.sh',
 		dependencies = 'hrsh7th/nvim-cmp',
 	},
+
 	'tpope/vim-fugitive',
 	'saadparwaiz1/cmp_luasnip',
 	'mhartington/formatter.nvim',
 	'tjdevries/express_line.nvim',
+	{
+		'ojroques/vim-oscyank',
+		branch = 'main',
+	},
 }
