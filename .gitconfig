@@ -1,0 +1,2 @@
+[includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
+	path = .gitconfig_github

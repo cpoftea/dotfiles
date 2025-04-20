@@ -69,7 +69,6 @@ return {
 		}
 	},
 	'mfussenegger/nvim-lint',
-	'wakatime/vim-wakatime',
 	'hrsh7th/nvim-cmp', -- Completion
 	'hrsh7th/cmp-nvim-lsp',
 	'ggandor/lightspeed.nvim',
