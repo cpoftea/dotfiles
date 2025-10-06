@@ -1,0 +1,44 @@
+# see https://github.com/sigoden/aichat/blob/main/config.example.yaml
+
+model: localai:gpt-4o
+clients:
+- type: openai-compatible
+  name: localai
+  models:
+    - name: gpt-4
+    - name: gpt-4o
+      supports_function_calling: true
+      supports_reasoning: true
+- type: azure-openai
+  name: corporate
+  models:
+  - name: anthropic.claude-v3-haiku
+  - name: claude-3-5-haiku@20241022
+  - name: claude-3-7-sonnet@20250219
+  - name: claude-sonnet-4@20250514
+  - name: deepseek-r1
+  - name: gemini-2.0-flash
+  - name: gemini-2.0-flash-lite
+  - name: gemini-2.5-flash
+  - name: gemini-2.5-flash-lite
+  - name: gemini-2.5-pro
+  - name: gpt-4
+  - name: gpt-4.1-mini-2025-04-14
+  - name: gpt-4.1-nano-2025-04-14
+  - name: gpt-4o
+  - name: gpt-4o-mini-2024-07-18
+  - name: gpt-5-mini-2025-08-07
+  - name: gpt-5-nano-2025-08-07
+  - name: gpt-oss-120b
+  - name: meta.llama4-maverick-17b-instruct-v1:0
+  - name: meta.llama4-scout-17b-instruct-v1:0
+  - name: o3-mini-2025-01-31
+  - name: o4-mini-2025-04-16
+  - name: rlab-qwq-32b
+  - name: text-embedding-005
+    type: embedding
+  - name: text-embedding-3-small-1
+    type: embedding
+  - name: text-multilingual-embedding-002
+    type: embedding
+
