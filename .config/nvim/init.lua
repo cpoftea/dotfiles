@@ -7,6 +7,7 @@ o.relativenumber = true
 o.signcolumn = 'yes:2'
 o.statusline = '%<%f %h%m%r%=%{%Linter()%} %{%Diagnostic()%} %{FugitiveStatusline()} %y %-14.(%l,%c%V%) %P '
 o.hidden = true
+o.completeopt = 'noselect'
 
 o.list = true
 opt.listchars = {
@@ -24,6 +25,8 @@ vim.cmd.colorscheme('terminal')
 o.backup = false
 o.writebackup = false
 o.swapfile = false
+o.winborder = 'single'
+o.autoread = true
 
 vim.g.copilot_filetypes = {
 	['*'] = false,
@@ -31,6 +34,7 @@ vim.g.copilot_filetypes = {
 	typescript = true,
 	javascript = true,
 	scss = true,
+	cs = true,
 	css = true,
 	json = true,
 	lua = true,
@@ -66,37 +70,10 @@ vim.cmd([[
 	highlight diffRemoved ctermfg=3 cterm=none
 ]])
 
-local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  })
-end
-
-vim.opt.rtp:prepend(lazypath)
-
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-require('lazy').setup('plugins', {
-	performance = {
-		rtp = {
-			reset = false,
-		},
-	},
-})
-
-require('nvim-treesitter.configs').setup({
-	highlight = {
-		enable = true,
-	},
-})
-
+require('config.lazy')
 
 local builtin = require('telescope.builtin')
 
@@ -105,7 +82,7 @@ vim.keymap.set('n', 'gm', ':lua syntaxStack()<CR>')
 
 -- Emacs shell movement
 vim.keymap.set('i', '<C-E>', '<ESC>A', { silent = true })
-vim.keymap.set('i', '<C-A>', '<ESC>I', { silent = true })
+vim.keymap.set('i', '<M-A>', '<ESC>I', { silent = true })
 
 -- Quit neovim
 vim.keymap.set('n', '<C-Q>', '<CMD>q<CR>', { silent = true })
@@ -152,19 +129,19 @@ cmp.setup({
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-local tabnine = require('cmp_tabnine.config')
-tabnine:setup({
-	max_lines = 1000;
-	max_num_results = 20;
-	sort = true;
-	run_on_every_keystroke = true;
-	snippet_placeholder = '..';
-	ignored_file_types = { -- default is not to ignore
-		-- uncomment to ignore in lua:
-		-- lua = true
-	};
-	show_prediction_strength = false;
-})
+-- local tabnine = require('cmp_tabnine.config')
+-- tabnine:setup({
+-- 	max_lines = 1000;
+-- 	max_num_results = 20;
+-- 	sort = true;
+-- 	run_on_every_keystroke = true;
+-- 	snippet_placeholder = '..';
+-- 	ignored_file_types = { -- default is not to ignore
+-- 		-- uncomment to ignore in lua:
+-- 		-- lua = true
+-- 	};
+-- 	show_prediction_strength = false;
+-- })
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -174,78 +151,57 @@ vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 local navic = require("nvim-navic")
--- Use an on_attach function to only map the following keys
+
+-- Use an LspAttach event to only map the following keys
 -- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-	if client.server_capabilities["documentSymbolProvider"] then
-		navic.attach(client, bufnr)
-	end
+vim.api.nvim_create_autocmd('LspAttach', {
+	callback = function(ev)
+		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		local bufnr = ev.buf
 
-	local newOpts = utils.merge(opts, { buffer = bufnr })
+		-- Enable completion triggered by <c-x><c-o>
+		-- vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+		if client:supports_method('textDocument/completion') then
+			vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
+		end
 
-	-- Enable completion triggered by <c-x><c-o>
-	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+		if client.server_capabilities.documentSymbolProvider then
+			require('nvim-navic').attach(client, bufnr)
+		end
 
-	-- Mappings.
-	-- See `:help vim.lsp.*` for documentation on any of the below functions
-	-- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, newOpts)
-	vim.keymap.set('n', '<leader>d', builtin.lsp_definitions, newOpts) -- vim.lsp.buf.definition, newOpts)
-	vim.keymap.set('n', '<leader>i', builtin.lsp_implementations, newOpts) --vim.lsp.buf.implementation, newOpts)
-	vim.keymap.set('n', '<leader>ci', builtin.lsp_incoming_calls, newOpts)
-	vim.keymap.set('n', '<leader>co', builtin.lsp_outgoing_calls, newOpts)
-	vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, newOpts)
-	vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, newOpts)
-	vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, newOpts)
-	vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, newOpts)
-	vim.keymap.set('n', '<leader>wl', function()
-		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-	end, newOpts)
-	vim.keymap.set('n', '<leader>td', builtin.lsp_type_definitions, newOpts) --vim.lsp.buf.type_definition, newOpts)
-	vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, newOpts)
-	vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, newOpts)
-	vim.keymap.set('n', '<leader>r', builtin.lsp_references, newOpts)
-	vim.keymap.set('n', '<leader>tr', builtin.treesitter, newOpts)
-	vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, newOpts)
-end
+		local newOpts = utils.merge(opts, { buffer = bufnr })
 
---local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
---function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-local orig_nvim_open_win = vim.api.nvim_open_win
-function vim.api.nvim_open_win(buffer, enter, config)
-	config.border = 'single'
-	return orig_nvim_open_win(buffer, enter, config)
-end
-
-require('java').setup()
-
--- Use a loop to conveniently call 'setup' on multiple servers and
--- map buffer local keybindings when the language server attaches
-local servers = { 
-	-- biome = {},
-	ts_ls = {},
-	hls = {},
-	jdtls = {},
-}
+		-- Mappings.
+		-- See `:help vim.lsp.*` for documentation on any of the below functions
+		-- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, newOpts)
+		vim.keymap.set('n', '<leader>d', builtin.lsp_definitions, newOpts) -- vim.lsp.buf.definition, newOpts)
+		vim.keymap.set('n', '<leader>i', builtin.lsp_implementations, newOpts) --vim.lsp.buf.implementation, newOpts)
+		vim.keymap.set('n', '<leader>ci', builtin.lsp_incoming_calls, newOpts)
+		vim.keymap.set('n', '<leader>co', builtin.lsp_outgoing_calls, newOpts)
+		vim.keymap.set('n', '<leader>ds', builtin.lsp_document_symbols, newOpts)
+		vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, newOpts)
+		vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, newOpts)
+		vim.keymap.set('n', '<leader>wl', function()
+			print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+		end, newOpts)
+		vim.keymap.set('n', '<leader>td', builtin.lsp_type_definitions, newOpts) --vim.lsp.buf.type_definition, newOpts)
+		vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, newOpts)
+		vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, newOpts)
+		vim.keymap.set('n', '<leader>r', builtin.lsp_references, newOpts)
+		vim.keymap.set('n', '<leader>tr', builtin.treesitter, newOpts)
+		vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, newOpts)
+	end,
+})
 
 -- Setup mason so it can manage external tooling
 require('mason').setup()
 
 -- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-	ensure_installed = vim.tbl_keys(servers),
-}
-
-mason_lspconfig.setup_handlers {
-	function(server_name)
-		require('lspconfig')[server_name].setup {
-			capabilities = capabilities,
-			on_attach = on_attach,
-			settings = servers[server_name],
-		}
-	end,
-}
+require('mason-lspconfig').setup({
+	ensure_installed = {
+		'ts_ls',
+	},
+})
 
 require('lint').linters_by_ft = {
   javascript = {'eslint'},
@@ -260,6 +216,16 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 		require("lint").try_lint()
 	end,
 })
+
+vim.api.nvim_create_autocmd('LspAttach', {
+	callback = function(ev)
+		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		if client:supports_method('textDocument/completion') then
+			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+		end
+	end,
+})
+
 
 local function get_diagnostic_count_by_severity(severity)
 	local n = 0

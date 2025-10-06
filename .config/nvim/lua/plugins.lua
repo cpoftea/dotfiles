@@ -1,48 +1,16 @@
 return {
 	'github/copilot.vim',
+	'mason-org/mason.nvim',
 	{
-		'jackMort/ChatGPT.nvim',
+		'mason-org/mason-lspconfig.nvim',
+		opts = {},
 		dependencies = {
-			'MunifTanjim/nui.nvim',
-			'nvim-lua/plenary.nvim',
-			'nvim-telescope/telescope.nvim',
-		},
-	},
-	{
-		'nvim-java/nvim-java',
-		dependencies = {
-			'nvim-java/nvim-java-refactor',
-			'nvim-java/lua-async-await',
-			'nvim-java/nvim-java-core',
-			'nvim-java/nvim-java-test',
-			'nvim-java/nvim-java-dap',
-			'MunifTanjim/nui.nvim',
+			{ 'mason-org/mason.nvim', opts = {} },
 			'neovim/nvim-lspconfig',
-			'mfussenegger/nvim-dap',
-			{
-				'williamboman/mason.nvim',
-				opts = {
-					registries = {
-						'github:nvim-java/mason-registry',
-						'github:mason-org/mason-registry',
-					},
-				},
-			},
 		},
 	},
 	{
-		'williamboman/mason.nvim',
-		build = ':MasonUpdate',
-	},
-	{ -- Collection of configurations for the built-in LSP client
-		'neovim/nvim-lspconfig',
-		dependencies = {
-			'williamboman/mason.nvim',
-			'williamboman/mason-lspconfig.nvim',
-		},
-	},
-	{ 
-		'nvim-treesitter/nvim-treesitter', 
+		'nvim-treesitter/nvim-treesitter',
 		build = function()
 			local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
 			ts_update()
@@ -64,8 +32,6 @@ return {
 		version = '0.1.4',
 		dependencies = {
 			'nvim-lua/plenary.nvim',
-			'nvim-treesitter/nvim-treesitter',
-			'nvim-tree/nvim-web-devicons',
 		}
 	},
 	'mfussenegger/nvim-lint',
