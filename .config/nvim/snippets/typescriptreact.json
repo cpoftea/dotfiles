@@ -1,0 +1,16 @@
+{
+	"Component file": {
+		"prefix": "rcmp",
+		"body": [
+			"interface $1Props {",
+			"\t",
+			"}",
+			"",
+			"const $1 = ({}: $1Props) => {",
+			"\treturn (",
+			"\t\t$0",
+			"\t);",
+			"};"
+		]
+	}
+}

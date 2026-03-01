@@ -9,6 +9,12 @@ clients:
     - name: gpt-4o
       supports_function_calling: true
       supports_reasoning: true
+- type: openai-compatible
+  name: perplexity
+  api_base: https://api.perplexity.ai
+  models:
+  - name: sonar
+  - name: sonar-pro
 - type: azure-openai
   name: corporate
   models:

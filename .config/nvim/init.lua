@@ -93,55 +93,9 @@ vim.keymap.set('n', '<C-A>', 'gg<S-V>G', { silent = true })
 -- ANSI OSC52 clipboard
 vim.keymap.set('v', '<leader>c', '<Plug>OSCYankVisual')
 
-local cmp = require('cmp')
-local ls = require('luasnip')
-
-cmp.setup({
-	snippet = {
-		-- REQUIRED - you must specify a snippet engine
-		expand = function(args)
-			require('luasnip').lsp_expand(args.body)
-		end,
-	},
-	window = {
-		documentation = cmp.config.window.bordered(),
-	},
-	mapping = cmp.mapping.preset.insert({
-		['<C-b>'] = cmp.mapping.scroll_docs(-4),
-		['<C-f>'] = cmp.mapping.scroll_docs(4),
-		['<C-Space>'] = cmp.mapping.complete(),
-		-- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-		['<C-y>'] = cmp.config.disable,
-		['<C-e>'] = cmp.mapping.abort(),
-		-- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-		['<CR>'] = cmp.mapping.confirm({ select = true }),
-	}),
-	sources = cmp.config.sources({
-		{ name = 'luasnip' },
-		{ name = 'nvim_lsp' },
-		{ name = 'cmp_tabnine' },
-	}, {
-		{ name = 'buffer' },
-	}),
-})
-
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- local tabnine = require('cmp_tabnine.config')
--- tabnine:setup({
--- 	max_lines = 1000;
--- 	max_num_results = 20;
--- 	sort = true;
--- 	run_on_every_keystroke = true;
--- 	snippet_placeholder = '..';
--- 	ignored_file_types = { -- default is not to ignore
--- 		-- uncomment to ignore in lua:
--- 		-- lua = true
--- 	};
--- 	show_prediction_strength = false;
--- })
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -267,17 +221,17 @@ vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
-vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
+-- local ls = require('luasnip')
+-- vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
+-- vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
+-- vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
+--
+-- vim.keymap.set({"i", "s"}, "<C-E>", function()
+-- 	if ls.choice_active() then
+-- 		ls.change_choice(1)
+-- 	end
+-- end, {silent = true})
 
-vim.keymap.set({"i", "s"}, "<C-E>", function()
-	if ls.choice_active() then
-		ls.change_choice(1)
-	end
-end, {silent = true})
-
-require('snippets')
 --vim.api.nvim_create_autocmd('VimEnter', {
 --	callback = function()
 --		if vim.fn.argv(0) == '' then

@@ -35,18 +35,25 @@ return {
 		}
 	},
 	'mfussenegger/nvim-lint',
-	'hrsh7th/nvim-cmp', -- Completion
-	'hrsh7th/cmp-nvim-lsp',
+	{
+		'saghen/blink.cmp',
+		version = '1.*',
+		opts = {
+			keymap = { preset = 'default' },
+			appearance = {
+				nerd_font_variant = 'mono'
+			},
+			completion = { documentation = { auto_show = false } },
+			sources = {
+				default = { 'lsp', 'path', 'snippets', 'buffer' },
+			},
+			fuzzy = { implementation = "prefer_rust_with_warning" }
+		},
+		opts_extend = { "sources.default" }
+	},
 	'ggandor/lightspeed.nvim',
 	'L3MON4D3/LuaSnip',
-	{
-		'tzachar/cmp-tabnine',
-		build = './install.sh',
-		dependencies = 'hrsh7th/nvim-cmp',
-	},
-
 	'tpope/vim-fugitive',
-	'saadparwaiz1/cmp_luasnip',
 	'mhartington/formatter.nvim',
 	'tjdevries/express_line.nvim',
 	{
