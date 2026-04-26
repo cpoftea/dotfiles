@@ -1,63 +1,60 @@
-return {
-	'github/copilot.vim',
-	'mason-org/mason.nvim',
+vim.pack.add({
+	'https://github.com/github/copilot.vim',
+})
+
+-- build nvim-treesitter
+vim.pack.add({
+	'https://github.com/nvim-treesitter/nvim-treesitter',
+})
+
+require('nvim-treesitter.install').update()
+
+--
+
+vim.pack.add({
+	'https://github.com/SmiteshP/nvim-navic',
+	'https://github.com/nvim-tree/nvim-web-devicons',
+	'https://github.com/utilyre/barbecue.nvim',
+})
+
+--
+
+vim.pack.add({
+	'https://github.com/nvim-lua/plenary.nvim',
 	{
-		'mason-org/mason-lspconfig.nvim',
-		opts = {},
-		dependencies = {
-			{ 'mason-org/mason.nvim', opts = {} },
-			'neovim/nvim-lspconfig',
-		},
+		src = 'https://github.com/nvim-telescope/telescope.nvim',
+		version = vim.version.range('0.2'),
 	},
+})
+
+--
+
+vim.pack.add({ 'https://github.com/mfussenegger/nvim-lint' })
+
+vim.pack.add({
+	'https://github.com/ggandor/lightspeed.nvim',
+	'https://github.com/L3MON4D3/LuaSnip',
+	'https://github.com/tpope/vim-fugitive',
+	'https://github.com/mhartington/formatter.nvim',
+	'https://github.com/tjdevries/express_line.nvim',
 	{
-		'nvim-treesitter/nvim-treesitter',
-		build = function()
-			local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-			ts_update()
-		end
-	},
-	{
-		'utilyre/barbecue.nvim',
-		name = 'barbecue',
-		version = '*',
-		dependencies = {
-			'SmiteshP/nvim-navic',
-			'nvim-tree/nvim-web-devicons',
-		},
-		opts = {},
-	},
-	'nvim-lua/plenary.nvim',
-	{
-		'nvim-telescope/telescope.nvim',
-		version = '0.1.4',
-		dependencies = {
-			'nvim-lua/plenary.nvim',
-		}
-	},
-	'mfussenegger/nvim-lint',
-	{
-		'saghen/blink.cmp',
-		version = '1.*',
-		opts = {
-			keymap = { preset = 'default' },
-			appearance = {
-				nerd_font_variant = 'mono'
-			},
-			completion = { documentation = { auto_show = false } },
-			sources = {
-				default = { 'lsp', 'path', 'snippets', 'buffer' },
-			},
-			fuzzy = { implementation = "prefer_rust_with_warning" }
-		},
-		opts_extend = { "sources.default" }
-	},
-	'ggandor/lightspeed.nvim',
-	'L3MON4D3/LuaSnip',
-	'tpope/vim-fugitive',
-	'mhartington/formatter.nvim',
-	'tjdevries/express_line.nvim',
-	{
-		'ojroques/vim-oscyank',
+		src = 'https://github.com/ojroques/vim-oscyank',
 		branch = 'main',
 	},
-}
+})
+
+vim.pack.add({ 'https://github.com/saghen/blink.lib', 'https://github.com/saghen/blink.cmp' })
+
+local cmp = require('blink.cmp')
+cmp.build():wait(60000)
+cmp.setup({
+	keymap = { preset = 'default' },
+	appearance = {
+		nerd_font_variant = 'mono'
+	},
+	completion = { documentation = { auto_show = false } },
+	sources = {
+		default = { 'lsp', 'path', 'snippets', 'buffer' },
+	},
+	fuzzy = { implementation = "prefer_rust_with_warning" }
+})

@@ -1,3 +1,6 @@
+require('plugin/lsp')
+require('plugins')
+
 local o = vim.o
 local opt = vim.opt
 
@@ -58,6 +61,7 @@ vim.cmd([[
 	highlight SignColumn ctermbg=none
 	highlight User1 cterm=reverse ctermfg=1
 	highlight User2 cterm=reverse ctermfg=3
+	highlight Visual cterm=reverse
 ]])
 
 -- Diff colors
@@ -73,7 +77,7 @@ vim.cmd([[
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-require('config.lazy')
+-- require('config.lazy')
 
 local builtin = require('telescope.builtin')
 
@@ -145,16 +149,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		vim.keymap.set('n', '<leader>tr', builtin.treesitter, newOpts)
 		vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, newOpts)
 	end,
-})
-
--- Setup mason so it can manage external tooling
-require('mason').setup()
-
--- Ensure the servers above are installed
-require('mason-lspconfig').setup({
-	ensure_installed = {
-		'ts_ls',
-	},
 })
 
 require('lint').linters_by_ft = {
